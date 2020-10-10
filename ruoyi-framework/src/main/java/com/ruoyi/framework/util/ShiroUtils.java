@@ -9,7 +9,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
-import com.ruoyi.framework.shiro.realm.UserRealm;
+import com.ruoyi.framework.shiro.realm.NormalUserRealm;
 import com.ruoyi.system.domain.SysUser;
 
 /**
@@ -59,7 +59,7 @@ public class ShiroUtils
     public static void clearCachedAuthorizationInfo()
     {
         RealmSecurityManager rsm = (RealmSecurityManager) SecurityUtils.getSecurityManager();
-        UserRealm realm = (UserRealm) rsm.getRealms().iterator().next();
+        NormalUserRealm realm = (NormalUserRealm) rsm.getRealms().iterator().next();
         realm.clearCachedAuthorizationInfo();
     }
 

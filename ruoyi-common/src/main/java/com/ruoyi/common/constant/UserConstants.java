@@ -99,6 +99,13 @@ public class UserConstants
     public static final String REGISTER_USER_TYPE = "01";
 
     /**
+     * 用户登录类型
+     */
+    public static final String USER_LOGIN_TYPE_GUEST = "Guest";
+    public static final String USER_LOGIN_TYPE_NORMAL = "Normal";
+    public static final String USER_LOGIN_TYPE_SSO = "Sso";
+
+    /**
      * 手机号码格式限制
      */
     public static final String MOBILE_PHONE_NUMBER_PATTERN = "^0{0,1}(13[0-9]|15[0-9]|14[0-9]|18[0-9])[0-9]{8}$";

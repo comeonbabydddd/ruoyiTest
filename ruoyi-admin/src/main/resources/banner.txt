@@ -1,5 +1,5 @@
-Application Version: ${ruoyi.version}
-Spring Boot Version: ${spring-boot.version}
+${AnsiColor.GREEN} Application Version: ${ruoyi.version}
+${AnsiColor.GREEN} Spring Boot Version: ${spring-boot.version}
 ////////////////////////////////////////////////////////////////////
 //                          _ooOoo_                               //
 //                         o8888888o                              //
@@ -22,3 +22,4 @@ Spring Boot Version: ${spring-boot.version}
 //      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        //
 //             佛祖保佑       永不宕机      永无BUG               //
 ////////////////////////////////////////////////////////////////////
+${AnsiColor.BLACK}

@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -103,16 +102,6 @@ public class ExcelUtil<T>
      * 注解列表
      */
     private List<Object[]> fields;
-
-    /**
-     * 统计列表
-     */
-    private Map<Integer, Double> statistics = new HashMap<Integer, Double>();
-
-    /**
-     * 数字格式
-     */
-    private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("######0.00");
 
     /**
      * 实体对象
@@ -249,19 +238,19 @@ public class ExcelUtil<T>
                             }
                         }
                     }
-                    else if ((Integer.TYPE == fieldType || Integer.class == fieldType) && StringUtils.isNumeric(Convert.toStr(val)))
+                    else if ((Integer.TYPE == fieldType) || (Integer.class == fieldType))
                     {
                         val = Convert.toInt(val);
                     }
-                    else if (Long.TYPE == fieldType || Long.class == fieldType)
+                    else if ((Long.TYPE == fieldType) || (Long.class == fieldType))
                     {
                         val = Convert.toLong(val);
                     }
-                    else if (Double.TYPE == fieldType || Double.class == fieldType)
+                    else if ((Double.TYPE == fieldType) || (Double.class == fieldType))
                     {
                         val = Convert.toDouble(val);
                     }
-                    else if (Float.TYPE == fieldType || Float.class == fieldType)
+                    else if ((Float.TYPE == fieldType) || (Float.class == fieldType))
                     {
                         val = Convert.toFloat(val);
                     }
@@ -358,7 +347,6 @@ public class ExcelUtil<T>
                 if (Type.EXPORT.equals(type))
                 {
                     fillExcelData(index, row);
-                    addStatisticsRow();
                 }
             }
             String filename = encodingFilename(sheetName);
@@ -465,15 +453,6 @@ public class ExcelUtil<T>
         headerFont.setColor(IndexedColors.WHITE.getIndex());
         style.setFont(headerFont);
         styles.put("header", style);
-        
-        style = wb.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        Font totalFont = wb.createFont();
-        totalFont.setFontName("Arial");
-        totalFont.setFontHeightInPoints((short) 10);
-        style.setFont(totalFont);
-        styles.put("total", style);
 
         return styles;
     }
@@ -503,13 +482,13 @@ public class ExcelUtil<T>
     {
         if (ColumnType.STRING == attr.cellType())
         {
-            cell.setCellType(CellType.STRING);
+            cell.setCellType(CellType.NUMERIC);
             cell.setCellValue(StringUtils.isNull(value) ? attr.defaultValue() : value + attr.suffix());
         }
         else if (ColumnType.NUMERIC == attr.cellType())
         {
             cell.setCellType(CellType.NUMERIC);
-            cell.setCellValue(StringUtils.contains(Convert.toStr(value), ".") ? Convert.toDouble(value) : Convert.toInt(value));
+            cell.setCellValue(Integer.parseInt(value + ""));
         }
     }
 
@@ -573,20 +552,15 @@ public class ExcelUtil<T>
                 {
                     cell.setCellValue(convertByExp(Convert.toStr(value), readConverterExp, separator));
                 }
-                else if (StringUtils.isNotEmpty(dictType) && StringUtils.isNotNull(value))
+                else if (StringUtils.isNotEmpty(dictType))
                 {
                     cell.setCellValue(convertDictByExp(Convert.toStr(value), dictType, separator));
-                }
-                else if (value instanceof BigDecimal && -1 != attr.scale())
-                {
-                    cell.setCellValue((((BigDecimal) value).setScale(attr.scale(), attr.roundingMode())).toString());
                 }
                 else
                 {
                     // 设置列类型
                     setCellVo(value, attr, cell);
                 }
-                addStatisticsData(column, Convert.toStr(value), attr);
             }
         }
         catch (Exception e)
@@ -769,53 +743,6 @@ public class ExcelUtil<T>
     }
 
     /**
-     * 合计统计信息
-     */
-    private void addStatisticsData(Integer index, String text, Excel entity)
-    {
-        if (entity != null && entity.isStatistics())
-        {
-            Double temp = 0D;
-            if (!statistics.containsKey(index))
-            {
-                statistics.put(index, temp);
-            }
-            try
-            {
-                temp = Double.valueOf(text);
-            }
-            catch (NumberFormatException e)
-            {
-            }
-            statistics.put(index, statistics.get(index) + temp);
-        }
-    }
-
-    /**
-     * 创建统计行
-     */
-    public void addStatisticsRow()
-    {
-        if (statistics.size() > 0)
-        {
-            Cell cell = null;
-            Row row = sheet.createRow(sheet.getLastRowNum() + 1);
-            Set<Integer> keys = statistics.keySet();
-            cell = row.createCell(0);
-            cell.setCellStyle(styles.get("total"));
-            cell.setCellValue("合计");
-
-            for (Integer key : keys)
-            {
-                cell = row.createCell(key);
-                cell.setCellStyle(styles.get("total"));
-                cell.setCellValue(DOUBLE_FORMAT.format(statistics.get(key)));
-            }
-            statistics.clear();
-        }
-    }
-
-    /**
      * 编码文件名
      */
     public String encodingFilename(String filename)
@@ -884,9 +811,9 @@ public class ExcelUtil<T>
         if (StringUtils.isNotEmpty(name))
         {
             Class<?> clazz = o.getClass();
-            Field field = clazz.getDeclaredField(name);
-            field.setAccessible(true);
-            o = field.get(o);
+            String methodName = "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
+            Method method = clazz.getMethod(methodName);
+            o = method.invoke(o);
         }
         return o;
     }
@@ -992,7 +919,7 @@ public class ExcelUtil<T>
                     {
                         if ((Double) val % 1 > 0)
                         {
-                            val = new BigDecimal(val.toString());
+                            val = new DecimalFormat("0.00").format(val);
                         }
                         else
                         {

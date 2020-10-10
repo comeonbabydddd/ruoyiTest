@@ -2,6 +2,9 @@ package com.ruoyi.web.controller.system;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.framework.shiro.authc.UserLoginToken;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -39,7 +42,8 @@ public class SysLoginController extends BaseController
     @ResponseBody
     public AjaxResult ajaxLogin(String username, String password, Boolean rememberMe)
     {
-        UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe);
+//        UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe);
+        UserLoginToken token = new UserLoginToken(username,password, UserConstants.USER_LOGIN_TYPE_NORMAL,"","");
         Subject subject = SecurityUtils.getSubject();
         try
         {
@@ -54,6 +58,33 @@ public class SysLoginController extends BaseController
                 msg = e.getMessage();
             }
             return error(msg);
+        }
+    }
+
+    /**
+     * 这里是一个租户的入口。后期如果配合登录页面进行改造。这里可以合并为一个登录扣。只是通过登录类型变量来控制就可以。
+     * @param username
+     * @param branchId
+     * @param authCode
+     * @return
+     */
+    @GetMapping("/ssoLogin")
+    public String ssoLogin(String username,String branchId,String authCode){
+        UserLoginToken token = new UserLoginToken(username,"", UserConstants.USER_LOGIN_TYPE_SSO,branchId,authCode);
+        Subject subject = SecurityUtils.getSubject();
+        try
+        {
+            subject.login(token);
+            return "ssoLogin";
+        }
+        catch (AuthenticationException e)
+        {
+            String msg = "用户或密码错误";
+            if (StringUtils.isNotEmpty(e.getMessage()))
+            {
+                msg = e.getMessage();
+            }
+            return "login";
         }
     }
 

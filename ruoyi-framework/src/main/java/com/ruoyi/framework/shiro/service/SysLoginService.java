@@ -41,7 +41,7 @@ public class SysLoginService
     public SysUser login(String username, String password)
     {
         // 验证码校验
-        if (ShiroConstants.CAPTCHA_ERROR.equals(ServletUtils.getRequest().getAttribute(ShiroConstants.CURRENT_CAPTCHA)))
+        if (!StringUtils.isEmpty(ServletUtils.getRequest().getAttribute(ShiroConstants.CURRENT_CAPTCHA)))
         {
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
             throw new CaptchaException();
@@ -71,7 +71,6 @@ public class SysLoginService
         // 查询用户信息
         SysUser user = userService.selectUserByLoginName(username);
 
-        /**
         if (user == null && maybeMobilePhoneNumber(username))
         {
             user = userService.selectUserByPhoneNumber(username);
@@ -81,7 +80,6 @@ public class SysLoginService
         {
             user = userService.selectUserByEmail(username);
         }
-        */
 
         if (user == null)
         {
@@ -108,7 +106,6 @@ public class SysLoginService
         return user;
     }
 
-    /**
     private boolean maybeEmail(String username)
     {
         if (!username.matches(UserConstants.EMAIL_PATTERN))
@@ -126,7 +123,6 @@ public class SysLoginService
         }
         return true;
     }
-    */
 
     /**
      * 记录登录信息

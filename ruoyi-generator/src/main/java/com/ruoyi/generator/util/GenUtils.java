@@ -116,11 +116,6 @@ public class GenUtils
         {
             column.setHtmlType(GenConstants.HTML_UPLOAD);
         }
-        // 内容字段设置富文本控件
-        else if (StringUtils.endsWithIgnoreCase(columnName, "content"))
-        {
-            column.setHtmlType(GenConstants.HTML_SUMMERNOTE);
-        }
     }
 
     /**
@@ -205,7 +200,7 @@ public class GenUtils
     /**
      * 关键字替换
      * 
-     * @param text 需要被替换的名字
+     * @param name 需要被替换的名字
      * @return 替换后的名字
      */
     public static String replaceText(String text)

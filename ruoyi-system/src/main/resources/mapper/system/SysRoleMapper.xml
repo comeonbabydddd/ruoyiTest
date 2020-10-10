@@ -70,12 +70,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="checkRoleNameUnique" parameterType="String" resultMap="SysRoleResult">
 		<include refid="selectRoleVo"/>
-		 where r.role_name=#{roleName} limit 1
+		 where r.role_name=#{roleName}
 	</select>
 	
 	<select id="checkRoleKeyUnique" parameterType="String" resultMap="SysRoleResult">
 		<include refid="selectRoleVo"/>
-		 where r.role_key=#{roleKey} limit 1
+		 where r.role_key=#{roleKey}
 	</select>
 	
 	<delete id="deleteRoleById" parameterType="Long">
@@ -99,7 +99,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="status != null and status != ''">status = #{status},</if>
  			<if test="remark != null">remark = #{remark},</if>
  			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
- 			update_time = ( select now())
+ 			update_time = now()
  		</set>
  		where role_id = #{roleId}
 	</update>
@@ -124,7 +124,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="status != null and status != ''">#{status},</if>
  			<if test="remark != null and remark != ''">#{remark},</if>
  			<if test="createBy != null and createBy != ''">#{createBy},</if>
- 			( select now())
+ 			now()
  		)
 	</insert>
 	

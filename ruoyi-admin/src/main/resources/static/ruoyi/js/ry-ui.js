@@ -11,7 +11,7 @@ var table = {
     // 设置实例配置
     set: function(id) {
     	if($.common.getLength(table.config) > 1) {
-    		var tableId = $.common.isEmpty(id) ? $(event.currentTarget).parents(".bootstrap-table").find("table.table").attr("id") : id;
+    		var tableId = $.common.isEmpty(id) ? $(event.currentTarget).parents(".bootstrap-table").find(".table").attr("id") : id;
             if ($.common.isNotEmpty(tableId)) {
                 table.options = table.get(tableId);
             }
@@ -130,8 +130,6 @@ var table = {
                     onReorderRow: options.onReorderRow,                 // 当拖拽结束后处理函数
                     queryParams: options.queryParams,                   // 传递参数（*）
                     rowStyle: options.rowStyle,                         // 通过自定义函数设置行样式
-                    footerStyle: options.footerStyle,                   // 通过自定义函数设置页脚样式
-                    headerStyle: options.headerStyle,                   // 通过自定义函数设置标题样式
                     columns: options.columns,                           // 显示列信息（*）
                     data: options.data,                                 // 被加载的数据
                     responseHandler: $.table.responseHandler,           // 在加载服务器发送来的数据之前处理函数
@@ -164,8 +162,8 @@ var table = {
             },
             // 请求获取数据后处理回调函数
             responseHandler: function(res) {
-            	if (typeof table.get(this.id).responseHandler == "function") {
-            		table.get(this.id).responseHandler(res);
+            	if (typeof table.options.responseHandler == "function") {
+            		table.options.responseHandler(res);
                 }
                 if (res.code == 0) {
                     if ($.common.isNotEmpty(table.options.sidePagination) && table.options.sidePagination == 'client') {
@@ -192,15 +190,9 @@ var table = {
             	$(optionsIds).on(TABLE_EVENTS, function () {
             		table.set($(this).attr("id"));
             	});
-            	// 在表格体渲染完成，并在 DOM 中可见后触发（事件）
-            	$(optionsIds).on("post-body.bs.table", function (e, args) {
-            		// 浮动提示框特效
-            		$(".table [data-toggle='tooltip']").tooltip();
-            	});
             	// 选中、取消、全部选中、全部取消（事件）
-            	$(optionsIds).on("check.bs.table check-all.bs.table uncheck.bs.table uncheck-all.bs.table", function (e, rowsAfter, rowsBefore) {
+            	$(optionsIds).on("check.bs.table check-all.bs.table uncheck.bs.table uncheck-all.bs.table", function (e, rows) {
             		// 复选框分页保留保存选中数组
-            		var rows = $.common.equals("uncheck-all", e.type) ? rowsBefore : rowsAfter;
             		var rowIds = $.table.affectedRowIds(rows);
             		if ($.common.isNotEmpty(table.options.rememberSelected) && table.options.rememberSelected) {
             			func = $.inArray(e.type, ['check', 'check-all']) > -1 ? 'union' : 'difference';
@@ -275,6 +267,8 @@ var table = {
             	if (typeof table.options.onLoadSuccess == "function") {
             		table.options.onLoadSuccess(data);
             	}
+            	// 浮动提示框特效
+            	$(".table [data-toggle='tooltip']").tooltip();
             },
             // 表格销毁
             destroy: function (tableId) {
@@ -337,10 +331,24 @@ var table = {
 				}
 			},
             // 搜索-默认第一个form
-            search: function(formId, tableId) {
+            search: function(formId, tableId, data) {
             	table.set(tableId);
-            	table.options.formId = $.common.isEmpty(formId) ? $('form').attr('id') : formId;
+            	var currentId = $.common.isEmpty(formId) ? $('form').attr('id') : formId;
             	var params = $.common.isEmpty(tableId) ? $("#" + table.options.id).bootstrapTable('getOptions') : $("#" + tableId).bootstrapTable('getOptions');
+            	params.queryParams = function(params) {
+                    var search = $.common.formToJSON(currentId);
+                    if($.common.isNotEmpty(data)){
+	                    $.each(data, function(key) {
+	                        search[key] = data[key];
+	                    });
+                    }
+                    search.pageSize = params.limit;
+                    search.pageNum = params.offset / params.limit + 1;
+                    search.searchValue = params.search;
+                    search.orderByColumn = params.sort;
+                    search.isAsc = params.order;
+    		        return search;
+    		    }
     		    if($.common.isNotEmpty(tableId)){
     				$("#" + tableId).bootstrapTable('refresh', params);
     			} else{
@@ -383,14 +391,12 @@ var table = {
     			});
             },
             // 导入数据
-            importExcel: function(formId, width, height) {
+            importExcel: function(formId) {
             	table.set();
             	var currentId = $.common.isEmpty(formId) ? 'importTpl' : formId;
-            	var _width = $.common.isEmpty(width) ? "400" : width;
-                var _height = $.common.isEmpty(height) ? "230" : height;
             	layer.open({
             		type: 1,
-            		area: [_width + 'px', _height + 'px'],
+            		area: ['400px', '230px'],
             		fix: false,
             		//不固定
             		maxmin: true,
@@ -724,13 +730,9 @@ var table = {
             	$.modal.alert(content, modal_status.WARNING);
             },
             // 关闭窗体
-            close: function (index) {
-            	if($.common.isEmpty(index)){
-            		var index = parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
-            	} else {
-            		layer.close(index);
-            	}
+            close: function () {
+            	var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
             },
             // 关闭全部窗体
             closeAll: function () {
@@ -1267,7 +1269,6 @@ var table = {
             		check: {
     				    enable: false,             // 置 zTree 的节点上是否显示 checkbox / radio
     				    nocheckInherit: true,      // 设置子节点是否自动继承
-    				    chkboxType: { "Y": "ps", "N": "ps" } // 父子节点的关联关系
     				},
     				data: {
     			        key: {
@@ -1492,7 +1493,7 @@ var table = {
                         flag = false;
                         return '';
                     }
-                    return arg == null ? '' : arg;
+                    return arg;
                 });
                 return flag ? str : '';
             },
@@ -1581,26 +1582,6 @@ var table = {
             isMobile: function () {
                 return navigator.userAgent.match(/(Android|iPhone|SymbianOS|Windows Phone|iPad|iPod)/i);
             },
-            // 数字正则表达式，只能为0-9数字
-            numValid : function(text){
-        		var patten = new RegExp(/^[0-9]+$/);
-        		return patten.test(text);
-        	},
-        	// 英文正则表达式，只能为a-z和A-Z字母
-            enValid : function(text){
-        		var patten = new RegExp(/^[a-zA-Z]+$/);
-        		return patten.test(text);
-        	},
-        	// 英文、数字正则表达式，必须包含（字母，数字）
-        	enNumValid : function(text){
-        		var patten = new RegExp(/^(?=.*[a-zA-Z]+)(?=.*[0-9]+)[a-zA-Z0-9]+$/);
-        		return patten.test(text);
-        	},
-        	// 英文、数字、特殊字符正则表达式，必须包含（字母，数字，特殊字符-_）
-        	charValid : function(text){
-        		var patten = new RegExp(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[-_])[A-Za-z\d-_]{6,}$/);
-        		return patten.test(text);
-        	},
         }
     });
 })(jQuery);

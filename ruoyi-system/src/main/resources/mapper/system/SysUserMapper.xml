@@ -77,7 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
 		</if>
 		<if test="deptId != null and deptId != 0">
-			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE FIND_IN_SET (#{deptId},ancestors) ))
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE FIND_IN_SET (#{deptId},ancestors) <![CDATA[ <> ]]> 0 ))
 		</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}
@@ -134,15 +134,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="checkLoginNameUnique" parameterType="String" resultType="int">
-		select count(1) from sys_user where login_name=#{loginName} limit 1
+		select count(1) from sys_user where login_name=#{loginName}
 	</select>
 	
 	<select id="checkPhoneUnique" parameterType="String" resultMap="SysUserResult">
-		select user_id, phonenumber from sys_user where phonenumber=#{phonenumber} limit 1
+		select user_id, phonenumber from sys_user where phonenumber=#{phonenumber}
 	</select>
 	
 	<select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult">
-		select user_id, email from sys_user where email=#{email} limit 1
+		select user_id, email from sys_user where email=#{email}
 	</select>
 	
 	<select id="selectUserById" parameterType="Long" resultMap="SysUserResult">
@@ -179,7 +179,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="loginDate != null">login_date = #{loginDate},</if>
  			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
  			<if test="remark != null">remark = #{remark},</if>
- 			update_time = ( select now())
+ 			update_time = now()
  		</set>
  		where user_id = #{userId}
 	</update>
@@ -216,7 +216,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="status != null and status != ''">#{status},</if>
  			<if test="createBy != null and createBy != ''">#{createBy},</if>
  			<if test="remark != null and remark != ''">#{remark},</if>
- 			( select now())
+ 			now()
  		)
 	</insert>
 	

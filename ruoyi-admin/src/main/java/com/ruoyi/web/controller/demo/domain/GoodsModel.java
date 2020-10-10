@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.demo.domain;
 
-import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -25,11 +24,6 @@ public class GoodsModel
      * 商品价格
      */
     private Double price;
-    
-    /**
-     * 商品日期
-     */
-    private Date date;
 
     /**
      * 商品种类
@@ -66,16 +60,6 @@ public class GoodsModel
         this.price = price;
     }
 
-    public Date getDate()
-    {
-        return date;
-    }
-
-    public void setDate(Date date)
-    {
-        this.date = date;
-    }
-
     public String getType()
     {
         return type;
@@ -92,7 +76,6 @@ public class GoodsModel
             .append("name", getName())
             .append("weight", getWeight())
             .append("price", getPrice())
-            .append("date", getDate())
             .append("type", getType())
             .toString();
     }

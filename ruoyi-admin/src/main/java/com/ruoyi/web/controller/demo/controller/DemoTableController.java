@@ -215,15 +215,6 @@ public class DemoTableController extends BaseController
     }
 
     /**
-     * 表格列宽拖动
-     */
-    @GetMapping("/resizable")
-    public String resizable()
-    {
-        return prefix + "/resizable";
-    }
-
-    /**
      * 表格行内编辑操作
      */
     @GetMapping("/editable")
@@ -257,15 +248,6 @@ public class DemoTableController extends BaseController
     public String print()
     {
         return prefix + "/print";
-    }
-
-    /**
-     * 表格标题格式化
-     */
-    @GetMapping("/headerStyle")
-    public String headerStyle()
-    {
-        return prefix + "/headerStyle";
     }
 
     /**

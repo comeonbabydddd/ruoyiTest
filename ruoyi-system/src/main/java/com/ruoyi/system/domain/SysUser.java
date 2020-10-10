@@ -5,7 +5,6 @@ import java.util.List;
 import javax.validation.constraints.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excel.ColumnType;
 import com.ruoyi.common.annotation.Excel.Type;
@@ -74,12 +73,12 @@ public class SysUser extends BaseEntity
     /** 删除标志（0代表存在 2代表删除） */
     private String delFlag;
 
-    /** 最后登录IP */
-    @Excel(name = "最后登录IP", type = Type.EXPORT)
+    /** 最后登陆IP */
+    @Excel(name = "最后登陆IP", type = Type.EXPORT)
     private String loginIp;
 
-    /** 最后登录时间 */
-    @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Type.EXPORT)
+    /** 最后登陆时间 */
+    @Excel(name = "最后登陆时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Type.EXPORT)
     private Date loginDate;
 
     /** 部门对象 */
@@ -233,7 +232,6 @@ public class SysUser extends BaseEntity
         this.avatar = avatar;
     }
 
-    @JsonIgnore
     public String getPassword()
     {
         return password;

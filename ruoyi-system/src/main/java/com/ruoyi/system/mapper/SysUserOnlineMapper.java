@@ -1,15 +1,17 @@
 package com.ruoyi.system.mapper;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import com.ruoyi.system.domain.SysUserOnline;
+import org.springframework.stereotype.Repository;
+
+import javax.annotation.Resource;
 
 /**
  * 在线用户 数据层
  * 
  * @author ruoyi
  */
+@Repository
 public interface SysUserOnlineMapper
 {
     /**
@@ -50,5 +52,5 @@ public interface SysUserOnlineMapper
      * @param lastAccessTime 过期时间
      * @return 会话集合
      */
-    public List<SysUserOnline> selectOnlineByExpired(Date lastAccessTime);
+    public List<SysUserOnline> selectOnlineByExpired(String lastAccessTime);
 }

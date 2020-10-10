@@ -3,15 +3,23 @@ package com.ruoyi.framework.config;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.Filter;
+
+import com.ruoyi.framework.shiro.authc.UserModularRealmAuthericator;
+import com.ruoyi.framework.shiro.realm.SsoUserRealm;
 import org.apache.commons.io.IOUtils;
+import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.io.ResourceUtils;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
@@ -23,7 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.framework.shiro.realm.UserRealm;
+import com.ruoyi.framework.shiro.realm.NormalUserRealm;
 import com.ruoyi.framework.shiro.session.OnlineSessionDAO;
 import com.ruoyi.framework.shiro.session.OnlineSessionFactory;
 import com.ruoyi.framework.shiro.web.filter.LogoutFilter;
@@ -172,12 +180,22 @@ public class ShiroConfig
      * 自定义Realm
      */
     @Bean
-    public UserRealm userRealm(EhCacheManager cacheManager)
+    public NormalUserRealm normalUserRealm(EhCacheManager cacheManager)
     {
-        UserRealm userRealm = new UserRealm();
-        userRealm.setCacheManager(cacheManager);
-        return userRealm;
+        NormalUserRealm normalUserRealm = new NormalUserRealm();
+        normalUserRealm.setCacheManager(cacheManager);
+        return normalUserRealm;
     }
+    /**
+     * 自定义Realm
+     */
+    @Bean
+    public SsoUserRealm ssoUserRealm(EhCacheManager cacheManager){
+        SsoUserRealm ssoUserRealm = new SsoUserRealm();
+        ssoUserRealm.setCacheManager(cacheManager);
+        return ssoUserRealm;
+    }
+
 
     /**
      * 自定义sessionDAO会话
@@ -228,19 +246,42 @@ public class ShiroConfig
     /**
      * 安全管理器
      */
+//    @Bean
+//    public SecurityManager securityManager(NormalUserRealm normalUserRealm)
+//    {
+//        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+//        // 设置realm.
+//        securityManager.setRealm(normalUserRealm);
+//        // 记住我
+//        securityManager.setRememberMeManager(rememberMeManager());
+//        // 注入缓存管理器;
+//        securityManager.setCacheManager(getEhCacheManager());
+//        // session管理器
+//        securityManager.setSessionManager(sessionManager());
+//        return securityManager;
+//    }
+
+    /**
+     * 用于连接realm和用户
+     * @return
+     */
     @Bean
-    public SecurityManager securityManager(UserRealm userRealm)
-    {
-        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        // 设置realm.
-        securityManager.setRealm(userRealm);
-        // 记住我
-        securityManager.setRememberMeManager(rememberMeManager());
+    public SecurityManager securityManager(){
+        DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
+        //设置Realm
+        defaultWebSecurityManager.setAuthenticator(modularRealmAuthenticator());
+        List<Realm>  realms = new ArrayList<>();
+        //添加多个Realm
+        realms.add(normalUserRealm(getEhCacheManager()));
+        realms.add(ssoUserRealm(getEhCacheManager()));
+        defaultWebSecurityManager.setRealms(realms);
+                // 记住我
+        defaultWebSecurityManager.setRememberMeManager(rememberMeManager());
         // 注入缓存管理器;
-        securityManager.setCacheManager(getEhCacheManager());
+        defaultWebSecurityManager.setCacheManager(getEhCacheManager());
         // session管理器
-        securityManager.setSessionManager(sessionManager());
-        return securityManager;
+        defaultWebSecurityManager.setSessionManager(sessionManager());
+        return  defaultWebSecurityManager;
     }
 
     /**
@@ -249,6 +290,7 @@ public class ShiroConfig
     public LogoutFilter logoutFilter()
     {
         LogoutFilter logoutFilter = new LogoutFilter();
+        logoutFilter.setCacheManager(getEhCacheManager());
         logoutFilter.setLoginUrl(loginUrl);
         return logoutFilter;
     }
@@ -283,6 +325,7 @@ public class ShiroConfig
         filterChainDefinitionMap.put("/logout", "logout");
         // 不需要拦截的访问
         filterChainDefinitionMap.put("/login", "anon,captchaValidate");
+        filterChainDefinitionMap.put("/ssoLogin", "anon");
         // 注册相关
         filterChainDefinitionMap.put("/register", "anon,captchaValidate");
         // 系统权限列表
@@ -397,5 +440,17 @@ public class ShiroConfig
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
+    }
+
+    /**
+     * 系统自带的Realm管理，主要针对多Realm
+     * @return
+     */
+    @Bean
+    public ModularRealmAuthenticator modularRealmAuthenticator(){
+        //用自己重新的覆盖
+        UserModularRealmAuthericator modularRealmAuthericator = new UserModularRealmAuthericator();
+        modularRealmAuthericator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
+        return modularRealmAuthericator;
     }
 }

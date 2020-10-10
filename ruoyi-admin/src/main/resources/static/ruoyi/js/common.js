@@ -291,7 +291,7 @@ function createMenuItem(dataUrl, menuName) {
     });
     // 选项卡菜单不存在
     if (flag) {
-        var str = '<a href="javascript:;" class="active menuTab noactive" data-id="' + dataUrl + '" data-panel="' + panelUrl + '">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
+        var str = '<a href="javascript:;" class="active menuTab" data-id="' + dataUrl + '" data-panel="' + panelUrl + '">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
         $('.menuTab', topWindow).removeClass('active');
 
         // 添加选项卡对应的iframe
@@ -345,32 +345,6 @@ function calSumWidth(elements) {
         width += $(this).outerWidth(true);
     });
     return width;
-}
-
-/** 密码规则范围验证 */
-function checkpwd(chrtype, password) {
-	if (chrtype == 1) {
-		if(!$.common.numValid(password)){
-			$.modal.alertWarning("密码只能为0-9数字");
-			return false;
-		}
-	} else if (chrtype == 2) {
-		if(!$.common.enValid(password)){
-			$.modal.alertWarning("密码只能为a-z和A-Z字母");
-			return false;
-		}
-	} else if (chrtype == 3) {
-		if(!$.common.enNumValid(password)){
-			$.modal.alertWarning("密码必须包含字母以及数字");
-			return false;
-		}
-	} else if (chrtype == 4) {
-		if(!$.common.charValid(password)){
-			$.modal.alertWarning("密码必须包含字母、数字、以及特殊符号-、_");
-			return false;
-		}
-	}
-	return true;
 }
 
 // 日志打印封装处理
