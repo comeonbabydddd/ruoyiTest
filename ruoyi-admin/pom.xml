@@ -86,7 +86,11 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-generator</artifactId>
         </dependency>
-        
+        <!-- 测试-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>test</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

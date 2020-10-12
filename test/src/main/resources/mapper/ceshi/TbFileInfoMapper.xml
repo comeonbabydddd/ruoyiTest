@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ceshi.mapper.TbFileInfoMapper">
+    
+    <resultMap type="TbFileInfo" id="TbFileInfoResult">
+        <result property="id"    column="id"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="fileUrl"    column="file_url"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="test01"    column="test01"    />
+        <result property="test02"    column="test02"    />
+    </resultMap>
+
+    <sql id="selectTbFileInfoVo">
+        select id, file_name, file_url, del_flag, create_by, create_time, update_by, update_time, remark, test01, test02 from tb_file_info
+    </sql>
+
+    <select id="selectTbFileInfoList" parameterType="TbFileInfo" resultMap="TbFileInfoResult">
+        <include refid="selectTbFileInfoVo"/>
+        <where>  
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="fileUrl != null  and fileUrl != ''"> and file_url = #{fileUrl}</if>
+            <if test="test01 != null "> and test01 = #{test01}</if>
+            <if test="test02 != null "> and test02 = #{test02}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbFileInfoById" parameterType="Long" resultMap="TbFileInfoResult">
+        <include refid="selectTbFileInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTbFileInfo" parameterType="TbFileInfo">
+        insert into tb_file_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="fileName != null">file_name,</if>
+            <if test="fileUrl != null">file_url,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="test01 != null">test01,</if>
+            <if test="test02 != null">test02,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="fileUrl != null">#{fileUrl},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="test01 != null">#{test01},</if>
+            <if test="test02 != null">#{test02},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbFileInfo" parameterType="TbFileInfo">
+        update tb_file_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="fileUrl != null">file_url = #{fileUrl},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="test01 != null">test01 = #{test01},</if>
+            <if test="test02 != null">test02 = #{test02},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbFileInfoById" parameterType="Long">
+        delete from tb_file_info where id = #{id}
+    </delete>
+
+    <delete id="deleteTbFileInfoByIds" parameterType="String">
+        delete from tb_file_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
