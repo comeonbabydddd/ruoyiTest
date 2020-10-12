@@ -64,7 +64,19 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 		</dependency>
-
+		<!-- fastdfs -->
+		<dependency>
+			<groupId>com.github.tobato</groupId>
+			<artifactId>fastdfs-client</artifactId>
+			<version>1.26.2</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>fastdfs</groupId>-->
+<!--			<artifactId>fastdfs</artifactId>-->
+<!--			<version>1.29-SNAPSHOT</version>-->
+<!--			<scope>system</scope>-->
+<!--			<systemPath>${project.basedir}/lib/fastdfs-client-java-1.29-SNAPSHOT.jar</systemPath>-->
+<!--		</dependency>-->
 		<!-- io常用工具类 -->
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -96,5 +108,5 @@
 		</dependency>
 		
     </dependencies>
-  
+
 </project>

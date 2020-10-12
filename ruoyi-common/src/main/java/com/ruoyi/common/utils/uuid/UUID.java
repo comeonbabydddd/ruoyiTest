@@ -1,7 +1,7 @@
 package com.ruoyi.common.utils.uuid;
 
 
-import com.sun.xml.internal.ws.util.UtilException;
+
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -458,7 +458,7 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
 
     /**
      * 获取{@link SecureRandom}，类提供加密的强随机数生成器 (RNG)
-     * 
+     *
      * @return {@link SecureRandom}
      */
     public static SecureRandom getSecureRandom()
@@ -466,10 +466,9 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
         try
         {
             return SecureRandom.getInstance("SHA1PRNG");
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new UtilException(e);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

@@ -1,12 +1,16 @@
 package com.ruoyi;
 
+import com.github.tobato.fastdfs.FdfsClientConfig;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.utils.IpUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.EnableMBeanExport;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.jmx.support.RegistrationPolicy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +18,9 @@ import org.springframework.stereotype.Component;
  * , MongoAutoConfiguration.class
  * @author ruoyi
  */
+//解决jmx重复注册bean的问题
+@EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)
+@Import(FdfsClientConfig.class)//只需要一行注解 @Import(FdfsClientConfig.class)就可以拥有带有连接池的FastDFS Java客户端了
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class})
 public class RuoYiApplication
 {
