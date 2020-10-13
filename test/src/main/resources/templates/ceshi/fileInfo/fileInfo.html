@@ -14,10 +14,10 @@
                                 <label>文件名称：</label>
                                 <input type="text" name="fileName"/>
                             </li>
-                            <li>
-                                <label>文件路径：</label>
-                                <input type="text" name="fileUrl"/>
-                            </li>
+<!--                            <li>-->
+<!--                                <label>文件路径：</label>-->
+<!--                                <input type="text" name="fileUrl"/>-->
+<!--                            </li>-->
                             <li>
                                 <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
                                 <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
@@ -39,6 +39,9 @@
                 </a>
                 <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="ceshi:fileInfo:export">
                     <i class="fa fa-download"></i> 导出
+                </a>
+                <a class="btn btn-success" onclick="modalContent()" shiro:hasPermission="ceshi:fileInfo:addFileTableSave">
+                    <i class="fa fa-plus"></i> 上传文件
                 </a>
             </div>
             <div class="col-sm-12 select-table table-striped">
@@ -101,6 +104,11 @@
             };
             $.table.init(options);
         });
+
+        function modalContent(){
+            $.modal.open("文件上传", prefix+"/addFileTable", 800, 600);
+        }
+
     </script>
 </body>
 </html>
