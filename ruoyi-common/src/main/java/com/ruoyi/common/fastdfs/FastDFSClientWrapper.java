@@ -68,7 +68,7 @@ public class FastDFSClientWrapper {
      * @param storePath
      * */
     private String getResAccessUrl(StorePath storePath) {
-        String fileUrl = "http://192.168.7.73:8000" + "/" + storePath.getFullPath();
+        String fileUrl = "http://119.3.101.139:8080" + "/" + storePath.getFullPath();
         return fileUrl;
     }
 }
